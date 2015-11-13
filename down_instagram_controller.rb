@@ -5,8 +5,6 @@ class DownInstagramController < ApplicationController
 	def down_img
 		# instagram 用户名
 		user_name = "chilinglin"
-
-		user_name = "chilinglin"
 		if !params[:user_name].blank?
 	      user_name = params[:user_name]
 	    end
