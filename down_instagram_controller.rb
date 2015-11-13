@@ -6,8 +6,8 @@ class DownInstagramController < ApplicationController
 		# instagram 用户名
 		user_name = "chilinglin"
 		if !params[:user_name].blank?
-	      user_name = params[:user_name]
-	    end
+	      		user_name = params[:user_name]
+	    	end
 
 		# 需要获取照片的链接
 		@site_url = "https://instagram.com/#{user_name}/"
