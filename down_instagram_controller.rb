@@ -14,12 +14,12 @@ class DownInstagramController < ApplicationController
 
 		# 返回结果保存的数组
 		@data = []
-		get_instagram_data(@site_url)	
+		get_instagram_data(@site_url)
 		# render json: @data
 	end
 
 	private
-	# 获取图片数据，下一页的数据获取方式为 链接＋?max_id=本页获取的最后一条记录的id	
+	# 获取图片数据，下一页的数据获取方式为 链接＋?max_id=本页获取的最后一条记录的id
 	def get_instagram_data(str_href)
 		doc_html = Nokogiri::HTML(open(str_href))
 		# p doc_html
@@ -28,22 +28,27 @@ class DownInstagramController < ApplicationController
 		# end
 		# p doc_html.css('script').text
 		# p JSON.parse(doc_html.css('script').text)
-		
-		# 获取页面中用于渲染节点的数据		
+
+		# 获取页面中用于渲染节点的数据
 		str_js = doc_html.css('script').text.to_s
 		# js数据进行截取，使用正则表达式方式
 		# 参考链接http://www.cnblogs.com/puresoul/archive/2011/11/29/2267938.html
 		str_js = /window._sharedData =.*?;/.match(str_js)
+
+		# 20151206修改 防止因为编码问题出现字符串中间有特殊符号影响数据解析的问题
+		str_js = str_js.to_s+"}"
+
 		# p str_js
-		
-		# 获取页面中图片部分的数据		
-		per_page_data = JSON.parse(str_js.to_s.gsub("window._sharedData =","").gsub(";",""))["entry_data"]["ProfilePage"][0]["user"]["media"]["nodes"]
+
+		# 获取页面中图片部分的数据
+		# per_page_data = JSON.parse(str_js.to_s.gsub("window._sharedData =","").gsub(";",""))["entry_data"]["ProfilePage"][0]["user"]["media"]["nodes"]
+		per_page_data = JSON.parse(str_js.to_s.gsub("window._sharedData =","").gsub("};",""))["entry_data"]["ProfilePage"][0]["user"]["media"]["nodes"]
 		per_page_data.each do |item|
 			# 对数据进行过滤，防止加载重复的数据
 			if @data.find{|tem| tem["id"]==item["id"]}.blank?
 				@data.push(item)
-			end			
-		end		
+			end
+		end
 
 		# 判断返回的数据，进行下一页数据的获取
 		if !per_page_data.blank?
@@ -52,4 +57,3 @@ class DownInstagramController < ApplicationController
 		end
 	end
 end
-
