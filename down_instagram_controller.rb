@@ -36,12 +36,14 @@ class DownInstagramController < ApplicationController
 		str_js = /window._sharedData =.*?;/.match(str_js)
 
 		# 20151206修改 防止因为编码问题出现字符串中间有特殊符号影响数据解析的问题
+		# 在字符串的结尾加上"}"现在的结尾为"};}"
 		str_js = str_js.to_s+"}"
 
 		# p str_js
 
 		# 获取页面中图片部分的数据
 		# per_page_data = JSON.parse(str_js.to_s.gsub("window._sharedData =","").gsub(";",""))["entry_data"]["ProfilePage"][0]["user"]["media"]["nodes"]
+		# 把正则表达式过滤方法进行修改把结尾的"};"替换为空"",保证出现特殊字符的情况下也能替换成功
 		per_page_data = JSON.parse(str_js.to_s.gsub("window._sharedData =","").gsub("};",""))["entry_data"]["ProfilePage"][0]["user"]["media"]["nodes"]
 		per_page_data.each do |item|
 			# 对数据进行过滤，防止加载重复的数据
